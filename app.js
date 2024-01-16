@@ -8,8 +8,8 @@ app.use(cors({
     origin: "*",
 }))
 
-
 //! Routes
+const Images = require("./Routes/Images.js")
 
 //! Routing
 app.get("/", (req, res) => { //* Root Routing to Check Server Status
@@ -19,7 +19,7 @@ app.get("/", (req, res) => { //* Root Routing to Check Server Status
     })
 });
 
-app.use();
+app.use("/images", Images);
 
 //! Export app instance
 module.exports = app

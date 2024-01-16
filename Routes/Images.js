@@ -1,7 +1,12 @@
 const express = require('express');
 
-
 // App Router ("Images")
-const router = express.Router();
+const Router = express.Router();
 
-router.route("/")
+// Handler
+const { getImages } = require("../Resources/Images.js")
+
+// Routes
+Router.route("/").get(getImages);
+
+module.exports = Router

@@ -5,3 +5,5 @@ class ServerResponse {
         this.body = body
     };
 };
+
+module.exports = ServerResponse
