@@ -1,12 +1,15 @@
 const express = require("express");
 const cors = require("cors");
+const morgan = require("morgan")
 
 //! App Initialization
 const app = express();
 
 app.use(cors({
     origin: "*",
-}))
+}));
+
+if (process.env.NODE_ENV === "development") app.use(morgan("short"));
 
 //! Routes
 const Images = require("./Routes/Images.js")

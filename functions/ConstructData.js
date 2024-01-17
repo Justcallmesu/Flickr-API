@@ -5,20 +5,40 @@ const ServerResponse = require("../class/ServerResponse.js");
 const ServerError = require("../class/ServerError.js");
 
 // Functions
-const jsonFlickrFeed = require("../functions/jsonFlickrFeed.js"); // DO NOT DELETE! THIS FUNCTION IS TO HANDLE JSONP
+const ConstructURL = require("./ConstructURL.js");
+const ConstructImageUrl = require("./ConstructImageURL.js");
 
-async function constructURL(tags, pages = 1, itemsPerPage = 5) {
-    const { data } = await axios.get(`https://api.flickr.com/services/feeds/photos_public.gne?format=json&tags=${tags}`, {})
-    const { items } = eval(data);
-
-    if (pages * itemsPerPage > items.length) {
-        return new ServerError(400, "Data is Out of Bound");
+async function constructData(tags, page = 1, itemsPerPage = 10, id) {
+    if (id && tags) {
+        return new ServerError(404, "You can only use one parameter id or Tags");
     }
 
-    const page = parseInt(pages);
-    const paginated = items.slice((page - 1) * itemsPerPage, itemsPerPage * page);
+    const { data } = await axios.get(ConstructURL(tags, page, itemsPerPage, id, "photos"));
 
-    return new ServerResponse(200, "Data Fetched", { total: items.length, page, length: paginated.length, items: paginated });
+    if (!id) { // If There is No ID Query Run This Conditional
+        const { photos: { pages, perpage, total, photo } } = data;
+
+        const transformedPhotos = await Promise.all(photo.map(async (e) => {
+            const photoData = e;
+
+            const { data: { profile } } = await axios.get(ConstructURL(0, 0, 0, e.owner, "user"));
+            photoData.owner = profile;
+            photoData.url = ConstructImageUrl(photoData.server, photoData.id, photoData.secret)
+            return photoData;
+        }));
+
+        return new ServerResponse(200, "Data Fetched", { pages, perpage, total, photos: transformedPhotos });
+    }
+
+    // Construct Single Data Section
+
+    if (data?.code === 1) { // Code 1 === No Photo Found
+        return new ServerError(404, "Photo Not Found");
+    }
+
+    const photoData = data.photo;
+    photoData.url = ConstructImageUrl(photoData.server, photoData.id, photoData.secret);
+    return new ServerResponse(200, "Data Fetched", photoData);
 }
 
-module.exports = constructURL;
+module.exports = constructData;
