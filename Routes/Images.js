@@ -4,9 +4,10 @@ const express = require('express');
 const Router = express.Router();
 
 // Handler
-const { getImages } = require("../Resources/Images.js")
+const { getImages, getImage } = require("../Resources/Images.js")
 
 // Routes
 Router.route("/").get(getImages);
+Router.route("/:id").get(getImage);
 
 module.exports = Router

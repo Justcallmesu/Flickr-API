@@ -12,7 +12,8 @@ function ConstructURL(tags, pages, itemsperpage, id, type = "photos") {
             return `${process.env.flickr_api_url.replace("{method}", "flickr.photos.getRecent").replace("{apikey}", process.env.flickr_app_public_key)}&page=${pages}&per_page=${itemsperpage}`;
         }
 
-        return `${process.env.flickr_api_url.replace("{method}", "flickr.profile.getProfile").replace("{apikey}", process.env.flickr_app_public_key)}&user_id=${id}`;
+        return `${process.env.flickr_api_url.replace("{method}", "flickr.photos.search").replace("{apikey}", process.env.flickr_app_public_key)}&user_id=${id}&safe_search=3&content_types=0&`;
+
     } catch (error) {
         console.error("Error While Fetching Flickr Data (ConstructURL.js):", error);
         process.exit(1);
