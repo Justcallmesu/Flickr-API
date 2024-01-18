@@ -9,12 +9,8 @@ const ConstructURL = require("./ConstructURL.js");
 const ConstructImageUrl = require("./ConstructImageURL.js");
 
 async function constructData(tags, page = 1, itemsPerPage = 10, id) {
-    if (id && tags) {
-        return new ServerError(404, "You can only use one parameter id or Tags");
-    }
-
+    console.log(id);
     const { data } = await axios.get(ConstructURL(tags, page, itemsPerPage, id, "photos"));
-
     if (!id) { // If There is No ID Query Run This Conditional
         const { photos: { page: CurrentPage, pages, perpage, total, photo } } = data;
 
